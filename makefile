@@ -45,7 +45,7 @@ Netflix.log:
 	git log > Netflix.log
 
 RunNetflix.out: RunNetflix.py
-	cat RunCNetflix.in
+	cat RunNetflix.in
 	./RunNetflix.py < RunNetflix.in > RunNetflix.out
 	cat RunNetflix.out
 
