@@ -4,7 +4,7 @@ from urllib.request import urlopen
 from math import sqrt
 import json
 
-avgRatingCache = [0] * 17771
+#avgRatingCache = [0] * 17771
 
 # -------------
 # netlix_load_avg_rating_cache
@@ -15,6 +15,11 @@ def netflix_load_avg_rating_cache ():
     url = urlopen("http://www.cs.utexas.edu/~ebanner/netflix-tests/BRG564-Average_Movie_Rating_Cache.json")
     avgRatingCache = json.loads(url.read().decode(url.info().get_param('charset') or 'utf-8'))
     
+def netflix_load_avg_viewer_rating ():
+    global avgViewerRatingCache
+    url = urlopen("http://www.cs.utexas.edu/~ebanner/netflix-tests/ezo55-Average_Viewer_Rating_Cache.json")
+    avgViewerRatingCache = json.loads(url.read().decode(url.info().get_param('charset') or 'utf-8'))
+    #print("avg rating for cust 1585790 = %s" % avgViewerRatingCache.get("1585790"))
 
 
 def netflix_predict (r, w):
@@ -24,7 +29,9 @@ def netflix_predict (r, w):
         and then output the RMSE
     """
     global avgRatingCache
+    global avgViewerRatingCache
     global probeSolution
+
     curMovie = ""
     n = 1
     rootMeanSum = 0.0
@@ -40,13 +47,15 @@ def netflix_predict (r, w):
                 curCustId = line[:len(line)-1]
             else:
                 curCustId = line[:len(line)]
-            curRating = str(avgRatingCache.get(curMovie))
+            curMovieRating = str(avgRatingCache.get(curMovie))
+            curViewerRating = str(avgViewerRatingCache.get(curCustId))
             expRating = str(probeSolution.get(curMovie).get(curCustId))
             #print("%s %s %s\n" % (type(curCustId),type(curRating),type(expRating)))
             n += 1
             try:
-                rootMeanSum += netflix_rmse(float(curRating), float(expRating))
-                w.write("curCust = %s.  curRating = %s.  expRating = %s\n" %(curCustId, curRating, expRating))
+                predictedRating = (float(curMovieRating) + float(curViewerRating)) / 2
+                rootMeanSum += netflix_rmse(float(predictedRating), float(expRating))
+                w.write("curCust = %s.  curMovieRating = %s.  expRating = %s\n" %(curCustId, curMovieRating, expRating))
             except TypeError:
                 w.write("TypeError\n")
 
@@ -78,6 +87,7 @@ def netflix_solve (r, w) :
     #print(probeSolution.get("1").get("30878"))
 
     netflix_load_avg_rating_cache()
+    netflix_load_avg_viewer_rating()
     netflix_predict(r, w)
 
 
