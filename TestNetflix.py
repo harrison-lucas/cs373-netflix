@@ -14,6 +14,25 @@ from Netflix import netflix_solve
 # -----------
 
 class TestNetflix (TestCase) :
+
+    # -----
+    # rmse
+    # -----
+
+    def test_rmse1 (self) :
+        actual = netflix_rmse(2, 2)
+        expected = 0
+        self.assertEqual(expected, actual)
+
+    def test_rmse2 (self) :
+        actual = netflix_rmse(2, 4)
+        expected = 2
+        self.assertEqual(expected, actual)
+
+    def test_rmse3 (self) :
+        actual = netflix_rmse(1, 4)
+        expected = 4.5
+        self.assertEqual(expected, actual)
     
     # -----
     # solve
