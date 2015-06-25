@@ -4,11 +4,33 @@ from urllib.request import urlopen
 from math import sqrt
 import json
 
-#avgRatingCache = [0] * 17771
+# -------------
+# netlix_load_caches
+# -------------
 
-# -------------
-# netlix_load_avg_rating_cache
-# -------------
+def netflix_load_caches ():
+    global avgRatingCache
+    global avgViewerRatingCache
+    global custYearsCache
+    global movieYearsCache
+    global probeSolution
+
+    url = urlopen("http://www.cs.utexas.edu/~ebanner/netflix-tests/BRG564-Average_Movie_Rating_Cache.json")
+    avgRatingCache = json.loads(url.read().decode(url.info().get_param('charset') or 'utf-8'))
+
+    url = urlopen("http://www.cs.utexas.edu/~ebanner/netflix-tests/ezo55-Average_Viewer_Rating_Cache.json")
+    avgViewerRatingCache = json.loads(url.read().decode(url.info().get_param('charset') or 'utf-8'))
+
+    url = urlopen("http://www.cs.utexas.edu/~ebanner/netflix-tests/mw23845-movie_years.json")
+    movieYearsCache = json.loads(url.read().decode(url.info().get_param('charset') or 'utf-8'))
+
+    url = urlopen("http://www.cs.utexas.edu/~ebanner/netflix-tests/drc2582-customer_decade_dict.json")
+    custYearsCache = json.loads(url.read().decode(url.info().get_param('charset') or 'utf-8'))
+
+    url = urlopen("http://www.cs.utexas.edu/~ebanner/netflix-tests/pam2599-probe_solutions.json")
+    probeSolution = json.loads(url.read().decode(url.info().get_param('charset') or 'utf-8'))
+
+
 
 def netflix_load_avg_rating_cache ():
     global avgRatingCache
@@ -134,17 +156,12 @@ def netflix_solve (r, w) :
     r a reader
     w a writer
     """
-    global avgRatingCache
-    global probeSolution
 
-    url = urlopen("http://www.cs.utexas.edu/~ebanner/netflix-tests/pam2599-probe_solutions.json")
-    probeSolution = json.loads(url.read().decode(url.info().get_param('charset') or 'utf-8'))
-    #print(probeSolution.get("1").get("30878"))
-
-    netflix_load_avg_rating_cache()
-    netflix_load_avg_viewer_rating()
-    netflix_load_movie_yrs_cache()
-    netflix_load_cust_years_cache()
+#    netflix_load_avg_rating_cache()
+#    netflix_load_avg_viewer_rating()
+#    netflix_load_movie_yrs_cache()
+#    netflix_load_cust_years_cache()
+    netflix_load_caches()
     netflix_predict(r, w)
 
     #dec = netflix_get_viewer_avg_by_decade("1048577","1") expect 4.466666666666667
